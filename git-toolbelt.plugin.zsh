@@ -2,7 +2,7 @@
 # Description
 # -----------
 #
-#  Completion script for git-extras (https://github.com/tj/git-extras).
+#  Completion script for git-toolbelt (https://github.com/nvie/git-toolbelt).
 #
 #  This depends on and reuses some of the internals of the _git completion
 #  function that ships with zsh itself. It will not work with the _git that ships
@@ -12,15 +12,14 @@
 # Authors
 # -------
 #
-#  * Alexis GRIMALDI (https://github.com/agrimaldi)
-#  * spacewander (https://github.com/spacewander)
+#  * Werner Stein (https://github.com/wstein)
 #
 # ------------------------------------------------------------------------------
 # Inspirations
 # -----------
 #
-#  * git-extras (https://github.com/tj/git-extras)
-#  * git-flow-completion (https://github.com/bobthecow/git-flow-completion)
+#  * git-toolbelt (https://github.com/nvie/git-toolbelt)
+#  * ohmyzsh git-extras plugin (https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins/git-extras)
 #
 # ------------------------------------------------------------------------------
 

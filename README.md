@@ -1,11 +1,11 @@
-# git-extras
+# git-toolbelt
 
-This plugin provides completion definitions for some of the commands defined by [git-extras](https://github.com/tj/git-extras).
+This plugin provides completion definitions for most of the commands defined by [git-toolbelt](https://github.com/nvie/git-toolbelt).
 
-To use it, add `git-extras` to the plugins array in your zshrc file:
+To use it, add `git-toolbelt` to the plugins list of your zshrc file:
 
 ```zsh
-plugins=(... git-extras)
+plugins=(... git-toolbelt)
 ```
 
 ## Setup notes
@@ -14,4 +14,4 @@ The completions work by augmenting the `_git` completion provided by `zsh`. This
 
 ### OS X Homebrew Setup
 
-**NOTE:** this no longer works on current Homebrew distributions of git. ~~On OS X with Homebrew, you need to install `git` with `brew install git --without-completions`. Otherwise, `git`'s `_git` will take precedence, and you won't see the completions for `git-extras` commands.~~
+**NOTE:** this may not work on current Homebrew distributions of git. 
