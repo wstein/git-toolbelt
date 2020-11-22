@@ -430,68 +430,55 @@ _git-undo(){
 zstyle -g existing_user_commands ':completion:*:*:git:*' user-commands
 
 zstyle ':completion:*:*:git:*' user-commands $existing_user_commands \
-    alias:'define, search and show aliases' \
-    archive-file:'export the current head of the git repository to an archive' \
-    authors:'generate authors report' \
-    back:'undo and stage latest commits' \
-    bug:'create bug branch' \
-    bulk:'run bulk commands' \
-    changelog:'generate a changelog report' \
-    chore:'create chore branch' \
-    clear-soft:'soft clean up a repository' \
-    clear:'rigorously clean up a repository' \
-    commits-since:'show commit logs since some date' \
-    contrib:'show user contributions' \
-    count:'show commit count' \
-    create-branch:'create branches' \
-    delete-branch:'delete branches' \
-    delete-merged-branches:'delete merged branches' \
-    delete-submodule:'delete submodules' \
-    delete-tag:'delete tags' \
-    delta:'lists changed files' \
-    effort:'show effort statistics on file(s)' \
-    extras:'awesome git utilities' \
-    feature:'create/merge feature branch' \
-    force-clone:'overwrite local repositories with clone' \
-    fork:'fork a repo on GitHub' \
-    fresh-branch:'create fresh branches' \
-    gh-pages:'create the GitHub pages branch' \
-    graft:'merge and destroy a given branch' \
-    guilt:'calculate change between two revisions' \
-    ignore-io:'get sample gitignore file' \
-    ignore:'add .gitignore patterns' \
-    info:'returns information on current repository' \
-    local-commits:'list local commits' \
-    lock:'lock a file excluded from version control' \
-    locked:'ls files that have been locked' \
-    merge-into:'merge one branch into another' \
-    merge-repo:'merge two repo histories' \
-    missing:'show commits missing from another branch' \
-    mr:'checks out a merge request locally' \
-    obliterate:'rewrite past commits to remove some files' \
-    pr:'checks out a pull request locally' \
-    psykorebase:'rebase a branch with a merge commit' \
-    pull-request:'create pull request to GitHub project' \
-    reauthor:'replace the author and/or committer identities in commits and tags' \
-    rebase-patch:'rebases a patch' \
-    refactor:'create refactor branch' \
-    release:'commit, tag and push changes to the repository' \
-    rename-branch:'rename a branch' \
-    rename-tag:'rename a tag' \
-    repl:'git read-eval-print-loop' \
-    reset-file:'reset one file' \
-    root:'show path of root' \
-    scp:'copy files to ssh compatible `git-remote`' \
-    sed:'replace patterns in git-controlled files' \
-    setup:'set up a git repository' \
-    show-merged-branches:'show merged branches' \
-    show-tree:'show branch tree of commit history' \
-    show-unmerged-branches:'show unmerged branches' \
-    squash:'import changes from a branch' \
-    stamp:'stamp the last commit message' \
-    standup:'recall the commit history' \
-    summary:'show repository summary' \
-    sync:'sync local branch with remote branch' \
-    touch:'touch and add file to the index' \
-    undo:'remove latest commits' \
-    unlock:'unlock a file excluded from version control'
+    current-branch:'Returns the name of the current branch' \
+    main-branch:'Returns the name of the default main branch' \
+    sha:'Returns the SHA value for the specified object, or the current branch' \
+    modified:'Returns a list of locally modified files' \
+    modified-since:'Like git-modified, but for printing a list of files that have been modified since master' \
+    separator:'Adds a commit with a message of only ---'\''s, so that it visually separates commits' \
+    spinoff:'Creates and checks out a new branch starting at and tracking the current branch' \
+    push-current:'Pushed the current branch out to origin, and makes sure to setup tracking of the remote branch' \
+    is-headless:'Tests if HEAD is pointing to a branch head' \
+    local-branches:'Returns a list of local branches in machine-processable style' \
+    remote-branches:'Returns a list of remote branches in machine-processable style' \
+    active-branches:'Returns a list of active branches in machine-processable style' \
+    local-branch-exists:'Tests if the given local branch exists' \
+    remote-branch-exists:'Tests if the given remote branch exists' \
+    tag-exists:'Tests if the given tag exists' \
+    recent-branches:'Returns a list of local branches, ordered by recency' \
+    remote-tracking-branch:'Print the name of the remote tracking branch of the current or given local branch name' \
+    local-commits:'Returns a list of commits that are still in your local repo, but haven'\''t been pushed to origin' \
+    has-local-commits:'Tests local commits still have to be pushed to origin' \
+    contains:'Tests if first is merged into second' \
+    is-ancestor:'Tests if first is an ancestor of second' \
+    stage-all:'Mimics the index / staging area to match the working tree exactly' \
+    unstage-all:'Unstages everything. Leaves the working tree intact' \
+    undo-merge:'Undo the last merge' \
+    undo-commit:'Undo the last commit without loosing any data' \
+    cleanup:'Deletes all branches that have already been merged into master or develop' \
+    fixup:'Amend all local staged changes into the last commit' \
+    fixup-with:'Interactively pick a commit to fixup with' \
+    workon:'Convenience command for quickly switching to a branch' \
+    delouse:'Rebuild the last commit, but keep the commit message' \
+    shatter-by-file:'Splits the last commit into N+1 commits, where N is the number of files in the last commit' \
+    commit-to:'Commit a change to a different branch' \
+    cherry-pick-to:'Cherry-pick to a different branch' \
+    is-repo:'Checks if the current directory is a Git repo' \
+    root:'Prints the root location of the working tree' \
+    repo:'Prints the location of the Git directory, typically .git' \
+    initial-commit:'prints the initial commit for the repo' \
+    has-local-changes:'Helper function that determines whether there are local changes' \
+    is-clean:'Helper function that determines whether there are local changes' \
+    is-dirty:'Helper function that determines whether there are local changes' \
+    drop-local-changes:'Drops all local changes, aborting rebase, undoing partial merges, resetting the index and removing any unknown local files' \
+    stash-everything:'Stashes the everything, leaving a totally clean working tree' \
+    update-all:'Updates all local branch heads to the remote'\''s equivalent' \
+    merged:'Shows what local branches have been merged into branch (defaults to master)' \
+    unmerged:'Shows what local branches have been merged into branch (defaults to master)' \
+    merge-status:'Shows merge status of all local branches against branch (defaults to the main branch)' \
+    branches-containing:'Returns a list of branches which contain the specified branch' \
+    committer-info:'Shows contribution stats for the given committer' \
+    conflicts:'Generates a summary for all local branches that will merge uncleanly' \
+    skip:'Skip locally modified file' \
+    unskip:'Unskip locally modified file' \
+    show-skipped:'Lists all files that are skipped from the index'
