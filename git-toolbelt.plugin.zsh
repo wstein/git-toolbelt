@@ -427,58 +427,91 @@ _git-undo(){
         '(--hard -h)'{--hard,-h}'[wipes your commit(s)]'
 }
 
+# ================================================================================
+
+_git-active-branches(){
+    _arguments  -C \
+        '-a[alias for -s]' \
+        '-h[display help message]' \
+        '-s[show branches active since <date> (as in '\''git log --since'\'')]'
+}
+
+_git-branches-containing() {
+    _arguments \
+        ':branch-name:__gitex_branch_names'
+}
+
+_git-cherry-pick-to() {
+    _arguments \
+        ':src:__gitex_branch_names' \
+        ':dest:__gitex_commits'
+}
+
+_git-commit-to() {
+    _arguments \
+        ':dest:__gitex_branch_names'
+}
+
+_git-committer-info(){
+    _arguments  -C \
+        '-a[Print for all committers]' \
+        '-A[Consider all branches (instead of only the current branch)]' \
+        '-h[display help message]'
+}
+
 zstyle -g existing_user_commands ':completion:*:*:git:*' user-commands
 
 zstyle ':completion:*:*:git:*' user-commands $existing_user_commands \
-    current-branch:'Returns the name of the current branch' \
-    main-branch:'Returns the name of the default main branch' \
-    sha:'Returns the SHA value for the specified object, or the current branch' \
-    modified:'Returns a list of locally modified files' \
-    modified-since:'Like git-modified, but for printing a list of files that have been modified since master' \
-    separator:'Adds a commit with a message of only ---'\''s, so that it visually separates commits' \
-    spinoff:'Creates and checks out a new branch starting at and tracking the current branch' \
-    push-current:'Pushed the current branch out to origin, and makes sure to setup tracking of the remote branch' \
-    is-headless:'Tests if HEAD is pointing to a branch head' \
-    local-branches:'Returns a list of local branches in machine-processable style' \
-    remote-branches:'Returns a list of remote branches in machine-processable style' \
-    active-branches:'Returns a list of active branches in machine-processable style' \
-    local-branch-exists:'Tests if the given local branch exists' \
-    remote-branch-exists:'Tests if the given remote branch exists' \
-    tag-exists:'Tests if the given tag exists' \
-    recent-branches:'Returns a list of local branches, ordered by recency' \
-    remote-tracking-branch:'Print the name of the remote tracking branch of the current or given local branch name' \
-    local-commits:'Returns a list of commits that are still in your local repo, but haven'\''t been pushed to origin' \
-    has-local-commits:'Tests local commits still have to be pushed to origin' \
-    contains:'Tests if first is merged into second' \
-    is-ancestor:'Tests if first is an ancestor of second' \
-    stage-all:'Mimics the index / staging area to match the working tree exactly' \
-    unstage-all:'Unstages everything. Leaves the working tree intact' \
-    undo-merge:'Undo the last merge' \
-    undo-commit:'Undo the last commit without loosing any data' \
-    cleanup:'Deletes all branches that have already been merged into master or develop' \
-    fixup:'Amend all local staged changes into the last commit' \
-    fixup-with:'Interactively pick a commit to fixup with' \
-    workon:'Convenience command for quickly switching to a branch' \
-    delouse:'Rebuild the last commit, but keep the commit message' \
-    shatter-by-file:'Splits the last commit into N+1 commits, where N is the number of files in the last commit' \
-    commit-to:'Commit a change to a different branch' \
-    cherry-pick-to:'Cherry-pick to a different branch' \
-    is-repo:'Checks if the current directory is a Git repo' \
-    root:'Prints the root location of the working tree' \
-    repo:'Prints the location of the Git directory, typically .git' \
+    active-branches:'returns a list of active branches in machine-processable style' \
+    auto-fixup:'experimental' \
+    branches-containing:'returns a list of branches which contain the specified branch' \
+    cherry-pick-to:'cherry-pick to a different branch' \
+    cleanup:'deletes all branches that have already been merged into master or develop, local and remote' \
+    commit-to:'commit a change to a different branch' \
+    committer-info:'Show contribution stats for any committer matching the given pattern' \
+    conflicts:'generates a summary for all local branches that will merge uncleanly' \
+    contains:'tests if first is merged into second' \
+    current-branch:'returns the name of the current branch' \
+    delouse:'rebuild the last commit, but keep the commit message' \
+    drop-local-changes:'drops all local changes, aborting rebase, undoing partial merges, resetting the index and removing any unknown local files' \
+    fixup-with:'interactively pick a commit to fixup with' \
+    fixup:'amend all local staged changes into the last commit' \
+    has-local-changes:'helper function that determines whether there are local changes' \
+    has-local-commits:'tests local commits still have to be pushed to origin' \
     initial-commit:'prints the initial commit for the repo' \
-    has-local-changes:'Helper function that determines whether there are local changes' \
-    is-clean:'Helper function that determines whether there are local changes' \
-    is-dirty:'Helper function that determines whether there are local changes' \
-    drop-local-changes:'Drops all local changes, aborting rebase, undoing partial merges, resetting the index and removing any unknown local files' \
-    stash-everything:'Stashes the everything, leaving a totally clean working tree' \
-    update-all:'Updates all local branch heads to the remote'\''s equivalent' \
-    merged:'Shows what local branches have been merged into branch (defaults to master)' \
-    unmerged:'Shows what local branches have been merged into branch (defaults to master)' \
-    merge-status:'Shows merge status of all local branches against branch (defaults to the main branch)' \
-    branches-containing:'Returns a list of branches which contain the specified branch' \
-    committer-info:'Shows contribution stats for the given committer' \
-    conflicts:'Generates a summary for all local branches that will merge uncleanly' \
-    skip:'Skip locally modified file' \
-    unskip:'Unskip locally modified file' \
-    show-skipped:'Lists all files that are skipped from the index'
+    is-ancestor:'tests if first is an ancestor of second' \
+    is-clean:'helper function that determines whether there are local changes' \
+    is-dirty:'helper function that determines whether there are local changes' \
+    is-headless:'tests if HEAD is pointing to a branch head' \
+    is-repo:'checks if the current directory is a Git repo' \
+    local-branch-exists:'tests if the given local branch exists' \
+    local-branches:'returns a list of local branches in machine-processable style' \
+    local-commits:'returns a list of commits that are still in your local repo, but haven'\''t been pushed to origin' \
+    main-branch:'returns the name of the default main branch' \
+    merge-status:'shows merge status of all local branches against branch (defaults to the main branch)' \
+    merged:'shows what local branches have been merged into branch (defaults to master)' \
+    modified-since:'like git-modified, but for printing a list of files that have been modified since master' \
+    modified:'returns a list of locally modified files' \
+    push-current:'pushed the current branch out to origin, and makes sure to setup tracking of the remote branch' \
+    recent-branches:'returns a list of local branches, ordered by recency' \
+    remote-branch-exists:'tests if the given remote branch exists' \
+    remote-branches:'returns a list of remote branches in machine-processable style' \
+    remote-tracking-branch:'print the name of the remote tracking branch of the current or given local branch name' \
+    repo:'prints the location of the Git directory, typically .git' \
+    root:'prints the root location of the working tree' \
+    separator:'adds a commit with a message of only ---'\''s, so that it visually separates commits' \
+    sha:'returns the SHA value for the specified object, or the current branch' \
+    shatter-by-file:'splits the last commit into N+1 commits, where N is the number of files in the last commit' \
+    show-skipped:'lists all files that are skipped from the index' \
+    skip:'skip locally modified file' \
+    spinoff:'creates and checks out a new branch starting at and tracking the current branch' \
+    stage-all:'mimics the index / staging area to match the working tree exactly' \
+    stash-everything:'stashes the everything, leaving a totally clean working tree' \
+    tag-exists:'tests if the given tag exists' \
+    undo-commit:'undo the last commit without loosing any data' \
+    undo-merge:'undo the last merge' \
+    unmerged:'shows what local branches have been merged into branch (defaults to master)' \
+    unskip:'unskip locally modified file' \
+    unstage-all:'unstages everything. Leaves the working tree intact' \
+    update-all:'updates all local branch heads to the remote'\''s equivalent' \
+    workon:'convenience command for quickly switching to a branch' \
