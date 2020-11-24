@@ -1,11 +1,11 @@
-# git-toolbelt
+# git-toolbelt-zsh (WIP)
 
 This plugin provides completion definitions for most of the commands defined by [git-toolbelt](https://github.com/nvie/git-toolbelt).
 
-To use it, add `git-toolbelt` to the plugins list of your zshrc file:
+To use it with antigen, add this line to your .zshrc file:
 
 ```zsh
-plugins=(... git-toolbelt)
+antigen bundle  wstein/git-toolbelt-zsh 
 ```
 
 ## Setup notes
