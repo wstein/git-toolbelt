@@ -421,15 +421,15 @@ _git-summary() {
 }
 
 
-_git-undo(){
+_git-undo() {
     _arguments  -C \
         '(--soft -s)'{--soft,-s}'[only rolls back the commit but changes remain un-staged]' \
         '(--hard -h)'{--hard,-h}'[wipes your commit(s)]'
 }
 
-# ================================================================================
+# <<=====<=====<<=====<=====<<-<>->>=====>=====>>=====>=====>>
 
-_git-active-branches(){
+_git-active-branches() {
     _arguments  -C \
         '-a[alias for -s]' \
         '-h[display help message]' \
@@ -447,16 +447,153 @@ _git-cherry-pick-to() {
         ':dest:__gitex_commits'
 }
 
+_git-cleanup() {
+    _arguments  -C \
+        '-h[display help message]' \
+        '-l[Local branches only, don'\''t touch the remotes]' \
+        '-n[Dry-run]' \
+        '-s[Squashed]' \
+        '-v[Be verbose (show what'\''s skipped)]' 
+}
+
 _git-commit-to() {
     _arguments \
         ':dest:__gitex_branch_names'
 }
 
-_git-committer-info(){
+_git-committer-info() {
     _arguments  -C \
         '-a[Print for all committers]' \
         '-A[Consider all branches (instead of only the current branch)]' \
         '-h[display help message]'
+}
+
+_git-conflicts() {
+    _arguments  -C \
+        '-r[Remote branches (default is only local branches)]'
+        '-q[Be quiet (only report about conflicts)]'
+        '-h[display help message]'
+}
+
+_git-contains() {
+    _arguments \
+        ':first:__gitex_branch_names' \
+        ':second:__gitex_branch_names'
+}
+
+_git-fixup-with() {
+    _arguments -C \
+        '-r[When done, trigger an interactive rebase right after]' \
+        '-h[display help message]' \
+        ':commit:__gitex_commits'
+}
+
+_git-is-ancestor() {
+    _arguments \
+        ':first:__gitex_branch_names' \
+        ':second:__gitex_branch_names'
+}
+
+_git-is-clean() {
+    _arguments -C \
+        '-a[Check if any files are marked (un)skipped]' \
+        '-h[display help message]' \
+        '-i[Check if index is clean]' \
+        '-v[Be verbose, print errors to stderr]' \
+        '-w[Check if worktree is clean]'
+}
+
+_git-is-dirty() {
+    _arguments -C \
+        '-a[Check if any files are marked (un)skipped]' \
+        '-h[display help message]' \
+        '-i[Check if index is dirty]' \
+        '-v[Be verbose, print errors to stderr]' \
+        '-w[Check if worktree is dirty]'
+}
+
+_git-last-commit-to-file() {
+    _arguments \
+        '-h[display help message]' \
+        ':files:_files'
+}
+
+_git-local-branch-exists() {
+    _arguments ':branch:__gitex_branch_names'
+}
+
+_git-merge-status() {
+    _arguments -C \
+        '-h[display help message]' \
+        ':branch:__gitex_branch_names'
+}
+
+_git-merged() {
+    _arguments -C \
+        '-h[display help message]' \
+        '-u[Show unmerged branches instead of merged branches]' \
+        ':branch:__gitex_branch_names'
+}
+
+_git-merges-cleanly() {
+    _arguments -C \
+        '-h[display help message]' \
+        '-l[List conflicting files]' \
+        ':branch:__gitex_branch_names'
+}
+
+_git-modified() {
+    _arguments -C \
+        '-h[display help message]' \
+        '-i[Consider the index, too]' \
+        '-q[Be quiet, only return with 0 exit code when files are modified]' \
+        '-u[Print only files that are unmerged (files with conflicts)]' \
+        ':commit:__gitex_commits'
+}
+
+_git-modified-since() {
+    _arguments -C \
+        '-h[display help message]' \
+        '-q[Be quiet, only return with 0 exit code when files are modified]' \
+        ':commit:__gitex_commits'
+}
+
+_git-push-current() {
+    _arguments -C \
+        '-f[Force push (will use a lease)]' \
+        '-h[display help message]' \
+        ':remote:__gitex_remote_names'
+}
+
+_git-remote-branch-exists() {
+    _arguments -C \
+        ':remote:__gitex_remote_names' \
+        ':branch:__gitex_branch_names'
+}
+
+_git-remote-branches() {
+    _arguments -C \
+        ':remote:__gitex_remote_names'
+}
+
+_git-remote-tracking-branch() {
+    _arguments -C \
+        '-h[display help message]' \
+        ':remote:__gitex_branch_names'
+}
+
+_git-repo() {
+    _arguments -C \
+        '-h[display help message]' \
+        '-q[Quiet (only return with exit code 0 if a git repo is found)]'
+}
+
+_git-sha() {
+    _arguments -C \
+        '-h[display help message]' \
+        '-q[Be quiet (only return exit code 0 when object exists)]' \
+        '-s[Output short SHAs]' \
+        # todo list objects
 }
 
 zstyle -g existing_user_commands ':completion:*:*:git:*' user-commands
@@ -474,7 +611,7 @@ zstyle ':completion:*:*:git:*' user-commands $existing_user_commands \
     current-branch:'returns the name of the current branch' \
     delouse:'rebuild the last commit, but keep the commit message' \
     drop-local-changes:'drops all local changes, aborting rebase, undoing partial merges, resetting the index and removing any unknown local files' \
-    fixup-with:'interactively pick a commit to fixup with' \
+    fixup-with:'Interactively lets you pick a commit from a list to fixup' \
     fixup:'amend all local staged changes into the last commit' \
     has-local-changes:'helper function that determines whether there are local changes' \
     has-local-commits:'tests local commits still have to be pushed to origin' \
@@ -484,16 +621,18 @@ zstyle ':completion:*:*:git:*' user-commands $existing_user_commands \
     is-dirty:'helper function that determines whether there are local changes' \
     is-headless:'tests if HEAD is pointing to a branch head' \
     is-repo:'checks if the current directory is a Git repo' \
+    last-commit-to-file:'Returns the SHA of the commit that last touched the given file' \
     local-branch-exists:'tests if the given local branch exists' \
     local-branches:'returns a list of local branches in machine-processable style' \
     local-commits:'returns a list of commits that are still in your local repo, but haven'\''t been pushed to origin' \
     main-branch:'returns the name of the default main branch' \
     merge-status:'shows merge status of all local branches against branch (defaults to the main branch)' \
     merged:'shows what local branches have been merged into branch (defaults to master)' \
+    merges-cleanly:'Performes a temporal merge against the given branch and reports success or failure through the exit code.' \
     modified-since:'like git-modified, but for printing a list of files that have been modified since master' \
-    modified:'returns a list of locally modified files' \
-    push-current:'pushed the current branch out to origin, and makes sure to setup tracking of the remote branch' \
-    recent-branches:'returns a list of local branches, ordered by recency' \
+    modified:'Prints list of files that are locally modified (and exist)' \
+    push-current:'pushed the current branch to origin, and makes sure to setup tracking of the remote branch' \
+    recent-branches:'Shows a list of local branches, ordered by their date' \
     remote-branch-exists:'tests if the given remote branch exists' \
     remote-branches:'returns a list of remote branches in machine-processable style' \
     remote-tracking-branch:'print the name of the remote tracking branch of the current or given local branch name' \
