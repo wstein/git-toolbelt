@@ -39,7 +39,7 @@ __gitex_commits() {
     declare -A commits
     git log --oneline -15 | sed 's/\([[:alnum:]]\{7\}\) /\1:/' | while read commit
     do
-        hash=$(echo $commit | cut -d':' -f1)
+        hash=$(echo "$commit" | cut -d':' -f1)
         commits[$hash]="$commit"
     done
     local ret=1
@@ -51,7 +51,7 @@ __gitex_remote_names() {
     declare -a remote_names
     remote_names=(${(f)"$(_call_program remotes git remote 2>/dev/null)"})
     __git_command_successful || return
-    _wanted remote-names expl remote-name compadd $* - $remote_names
+    _wanted remote-names expl remote-name compadd "$*" - "$remote_names"
 }
 
 __gitex_tag_names() {
@@ -59,7 +59,7 @@ __gitex_tag_names() {
     declare -a tag_names
     tag_names=(${${(f)"$(_call_program tags git for-each-ref --format='"%(refname)"' refs/tags 2>/dev/null)"}#refs/tags/})
     __git_command_successful || return
-    _wanted tag-names expl tag-name compadd $* - $tag_names
+    _wanted tag-names expl tag-name compadd "$*" - "$tag_names"
 }
 
 
@@ -68,7 +68,7 @@ __gitex_branch_names() {
     declare -a branch_names
     branch_names=(${${(f)"$(_call_program branchrefs git for-each-ref --format='"%(refname)"' refs/heads 2>/dev/null)"}#refs/heads/})
     __git_command_successful || return
-    _wanted branch-names expl branch-name compadd $* - $branch_names
+    _wanted branch-names expl branch-name compadd "$*" - "$branch_names"
 }
 
 __gitex_specific_branch_names() {
@@ -76,7 +76,7 @@ __gitex_specific_branch_names() {
     declare -a branch_names
     branch_names=(${${(f)"$(_call_program branchrefs git for-each-ref --format='"%(refname)"' refs/heads/"$1" 2>/dev/null)"}#refs/heads/$1/})
     __git_command_successful || return
-    _wanted branch-names expl branch-name compadd - $branch_names
+    _wanted branch-names expl branch-name compadd - "$branch_names"
 }
 
 __gitex_chore_branch_names() {
@@ -100,7 +100,7 @@ __gitex_submodule_names() {
     declare -a submodule_names
     submodule_names=(${(f)"$(_call_program branchrefs git submodule status | awk '{print $2}')"})  # '
     __git_command_successful || return
-    _wanted submodule-names expl submodule-name compadd $* - $submodule_names
+    _wanted submodule-names expl submodule-name compadd "$*" - "$submodule_names"
 }
 
 
@@ -109,325 +109,10 @@ __gitex_author_names() {
     declare -a author_names
     author_names=(${(f)"$(_call_program branchrefs git log --format='%aN' | sort -u)"})
     __git_command_successful || return
-    _wanted author-names expl author-name compadd $* - $author_names
+    _wanted author-names expl author-name compadd "$*" - "$author_names"
 }
 
-# subcommands
-_git-authors() {
-    _arguments  -C \
-        '(--list -l)'{--list,-l}'[show authors]' \
-        '--no-email[without email]' \
-}
-
-_git-bug() {
-    local curcontext=$curcontext state line ret=1
-    declare -A opt_args
-
-    _arguments -C \
-        ': :->command' \
-        '*:: :->option-or-argument' && ret=0
-
-    case $state in
-        (command)
-            declare -a commands
-            commands=(
-                'finish:merge bug into the current branch'
-            )
-            _describe -t commands command commands && ret=0
-            ;;
-        (option-or-argument)
-            curcontext=${curcontext%:*}-$line[1]:
-            case $line[1] in
-                (finish)
-                    _arguments -C \
-                        ':branch-name:__gitex_bug_branch_names'
-                    ;;
-                -r|--remote )
-                    _arguments -C \
-                        ':remote-name:__gitex_remote_names'
-                    ;;
-            esac
-            return 0
-    esac
-
-    _arguments \
-        '(--remote -r)'{--remote,-r}'[setup remote tracking branch]'
-}
-
-
-_git-changelog() {
-    _arguments \
-        '(-l --list)'{-l,--list}'[list commits]' \
-}
-
-_git-chore() {
-    local curcontext=$curcontext state line ret=1
-    declare -A opt_args
-
-    _arguments -C \
-        ': :->command' \
-        '*:: :->option-or-argument' && ret=0
-
-    case $state in
-        (command)
-            declare -a commands
-            commands=(
-                'finish:merge and delete the chore branch'
-            )
-            _describe -t commands command commands && ret=0
-            ;;
-        (option-or-argument)
-            curcontext=${curcontext%:*}-$line[1]:
-            case $line[1] in
-                (finish)
-                    _arguments -C \
-                        ':branch-name:__gitex_chore_branch_names'
-                    ;;
-                -r|--remote )
-                    _arguments -C \
-                        ':remote-name:__gitex_remote_names'
-                    ;;
-            esac
-            return 0
-    esac
-
-    _arguments \
-        '(--remote -r)'{--remote,-r}'[setup remote tracking branch]'
-}
-
-
-_git-contrib() {
-    _arguments \
-        ':author:__gitex_author_names'
-}
-
-
-_git-count() {
-    _arguments \
-        '--all[detailed commit count]'
-}
-
-_git-create-branch() {
-    local curcontext=$curcontext state line
-    _arguments -C \
-        ': :->command' \
-        '*:: :->option-or-argument'
-
-    case "$state" in
-        (command)
-            _arguments \
-                '(--remote -r)'{--remote,-r}'[setup remote tracking branch]'
-            ;;
-        (option-or-argument)
-            curcontext=${curcontext%:*}-$line[1]:
-            case $line[1] in
-                -r|--remote )
-                    _arguments -C \
-                        ':remote-name:__gitex_remote_names'
-                    ;;
-            esac
-    esac
-}
-
-_git-delete-branch() {
-    _arguments \
-        ':branch-name:__gitex_branch_names'
-}
-
-
-_git-delete-submodule() {
-    _arguments \
-        ':submodule-name:__gitex_submodule_names'
-}
-
-
-_git-delete-tag() {
-    _arguments \
-        ':tag-name:__gitex_tag_names'
-}
-
-
-_git-effort() {
-    _arguments \
-        '--above[ignore file with less than x commits]'
-}
-
-
-_git-extras() {
-    local curcontext=$curcontext state line ret=1
-    declare -A opt_args
-
-    _arguments -C \
-        ': :->command' \
-        '*:: :->option-or-argument' && ret=0
-
-    case $state in
-        (command)
-            declare -a commands
-            commands=(
-                'update:update git-extras'
-            )
-            _describe -t commands command commands && ret=0
-            ;;
-    esac
-
-    _arguments \
-        '(-v --version)'{-v,--version}'[show current version]'
-}
-
-
-_git-feature() {
-    local curcontext=$curcontext state line ret=1
-    declare -A opt_args
-
-    _arguments -C \
-        ': :->command' \
-        '*:: :->option-or-argument' && ret=0
-
-    case $state in
-        (command)
-            declare -a commands
-            commands=(
-                'finish:merge feature into the current branch'
-            )
-            _describe -t commands command commands && ret=0
-            ;;
-        (option-or-argument)
-            curcontext=${curcontext%:*}-$line[1]:
-            case $line[1] in
-                (finish)
-                    _arguments -C \
-                        ':branch-name:__gitex_feature_branch_names'
-                    ;;
-                -r|--remote )
-                    _arguments -C \
-                        ':remote-name:__gitex_remote_names'
-                    ;;
-            esac
-            return 0
-    esac
-
-    _arguments \
-        '(--remote -r)'{--remote,-r}'[setup remote tracking branch]'
-}
-
-_git-graft() {
-    _arguments \
-        ':src-branch-name:__gitex_branch_names' \
-        ':dest-branch-name:__gitex_branch_names'
-}
-
-_git-guilt() {
-    _arguments -C \
-        '(--email -e)'{--email,-e}'[display author emails instead of names]' \
-        '(--ignore-whitespace -w)'{--ignore-whitespace,-w}'[ignore whitespace only changes]' \
-        '(--debug -d)'{--debug,-d}'[output debug information]' \
-        '-h[output usage information]'
-}
-
-_git-ignore() {
-    _arguments  -C \
-        '(--local -l)'{--local,-l}'[show local gitignore]' \
-        '(--global -g)'{--global,-g}'[show global gitignore]' \
-        '(--private -p)'{--private,-p}'[show repo gitignore]'
-}
-
-
-_git-ignore() {
-    _arguments  -C \
-        '(--append -a)'{--append,-a}'[append .gitignore]' \
-        '(--replace -r)'{--replace,-r}'[replace .gitignore]' \
-        '(--list-in-table -l)'{--list-in-table,-l}'[print available types in table format]' \
-        '(--list-alphabetically -L)'{--list-alphabetically,-L}'[print available types in alphabetical order]' \
-        '(--search -s)'{--search,-s}'[search word in available types]'
-}
-
-
-_git-merge-into() {
-    _arguments '--ff-only[merge only fast-forward]'
-    _arguments \
-        ':src:__gitex_branch_names' \
-        ':dest:__gitex_branch_names'
-}
-
-_git-missing() {
-    _arguments \
-        ':first-branch-name:__gitex_branch_names' \
-        ':second-branch-name:__gitex_branch_names'
-}
-
-
-_git-refactor() {
-    local curcontext=$curcontext state line ret=1
-    declare -A opt_args
-
-    _arguments -C \
-        ': :->command' \
-        '*:: :->option-or-argument' && ret=0
-
-    case $state in
-        (command)
-            declare -a commands
-            commands=(
-                'finish:merge refactor into the current branch'
-            )
-            _describe -t commands command commands && ret=0
-            ;;
-        (option-or-argument)
-            curcontext=${curcontext%:*}-$line[1]:
-            case $line[1] in
-                (finish)
-                    _arguments -C \
-                        ':branch-name:__gitex_refactor_branch_names'
-                    ;;
-                -r|--remote )
-                    _arguments -C \
-                        ':remote-name:__gitex_remote_names'
-                    ;;
-            esac
-            return 0
-    esac
-
-    _arguments \
-        '(--remote -r)'{--remote,-r}'[setup remote tracking branch]'
-}
-
-
-_git-squash() {
-    _arguments \
-        ':branch-name:__gitex_branch_names'
-}
-
-_git-stamp() {
-    _arguments  -C \
-         '(--replace -r)'{--replace,-r}'[replace stamps with same id]'
-}
-
-_git-standup() {
-    _arguments -C \
-        '-a[Specify the author of commits. Use "all" to specify all authors.]' \
-        '-d[Show history since N days ago]' \
-        '-D[Specify the date format displayed in commit history]' \
-        '-f[Fetch commits before showing history]' \
-        '-g[Display GPG signed info]' \
-        '-h[Display help message]' \
-        '-L[Enable the inclusion of symbolic links]' \
-        '-m[The depth of recursive directory search]'
-}
-
-_git-summary() {
-    _arguments '--line[summarize with lines rather than commits]'
-    __gitex_commits
-}
-
-
-_git-undo() {
-    _arguments  -C \
-        '(--soft -s)'{--soft,-s}'[only rolls back the commit but changes remain un-staged]' \
-        '(--hard -h)'{--hard,-h}'[wipes your commit(s)]'
-}
-
-# <<=====<=====<<=====<=====<<-<>->>=====>=====>>=====>=====>>
+# ==========================================================================
 
 _git-active-branches() {
     _arguments  -C \
@@ -470,8 +155,8 @@ _git-committer-info() {
 
 _git-conflicts() {
     _arguments  -C \
-        '-r[Remote branches (default is only local branches)]'
-        '-q[Be quiet (only report about conflicts)]'
+        '-r[Remote branches (default is only local branches)]' \
+        '-q[Be quiet (only report about conflicts)]' \
         '-h[display help message]'
 }
 
@@ -592,13 +277,49 @@ _git-sha() {
     _arguments -C \
         '-h[display help message]' \
         '-q[Be quiet (only return exit code 0 when object exists)]' \
-        '-s[Output short SHAs]' \
+        '-s[Output short SHAs]' 
         # todo list objects
+}
+
+_git-show-skipped() {
+    _arguments -C \
+        '-h[display help message]' \
+        '-q[Be quiet (only return exit code 0 when object exists)]'
+}
+
+_git-skip() {
+    _arguments -C \
+        "-a[Skip all locally modified files]" \
+        '-q[Be quiet (only return exit code 0 when object exists)]'
+}
+
+_git-undo-commit() {
+    _arguments -C \
+        "-f[Don't keep the commit's changes (destructive)]" \
+        '-q[Be quiet (only return exit code 0 when object exists)]'
+}
+
+_git-unskip() {
+    _arguments -C \
+        "-a[Unskip all files]" \
+        '-q[Be quiet (only return exit code 0 when object exists)]'
+}
+
+_git-workon() {
+    _arguments -C \
+        '-h[display help message]' \
+        ':remote:__gitex_branch_names'
+}
+
+_git-update-all() {
+    _arguments -C \
+        '-h[display help message]' \
+        ':remote:__gitex_branch_names'
 }
 
 zstyle -g existing_user_commands ':completion:*:*:git:*' user-commands
 
-zstyle ':completion:*:*:git:*' user-commands $existing_user_commands \
+zstyle ':completion:*:*:git:*' user-commands "${existing_user_commands}" \
     active-branches:'returns a list of active branches in machine-processable style' \
     auto-fixup:'experimental' \
     branches-containing:'returns a list of branches which contain the specified branch' \
@@ -653,4 +374,4 @@ zstyle ':completion:*:*:git:*' user-commands $existing_user_commands \
     unskip:'unskip locally modified file' \
     unstage-all:'unstages everything. Leaves the working tree intact' \
     update-all:'updates all local branch heads to the remote'\''s equivalent' \
-    workon:'convenience command for quickly switching to a branch' \
+    workon:'convenience command for quickly switching to a branch' 
